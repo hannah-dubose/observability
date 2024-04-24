@@ -1,24 +1,20 @@
 const { Resource } = require("@opentelemetry/resources");
 const { SemanticResourceAttributes } = require("@opentelemetry/semantic-conventions");
+const { JaegerExporter } = require('@opentelemetry/exporter-jaeger');
 const { SimpleSpanProcessor } = require("@opentelemetry/sdk-trace-base");
 const { NodeTracerProvider } = require("@opentelemetry/sdk-trace-node");
 const { trace } = require("@opentelemetry/api");
-
+//Instrumentations
 const { ExpressInstrumentation } = require("opentelemetry-instrumentation-express");
 const { MongoDBInstrumentation } = require("@opentelemetry/instrumentation-mongodb");
 const { HttpInstrumentation } = require("@opentelemetry/instrumentation-http");
 const { registerInstrumentations } = require("@opentelemetry/instrumentation");
-const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
-
+//Exporter
 module.exports = (serviceName) => {
-   const exporter = new JaegerExporter({
-       serviceName: serviceName,
-       
-   });
-
+   const exporter = new JaegerExporter();
    const provider = new NodeTracerProvider({
        resource: new Resource({
-           serviceName: 'todo-service',
+           [SemanticResourceAttributes.SERVICE_NAME]: "todo-service",
        }),
    });
    provider.addSpanProcessor(new SimpleSpanProcessor(exporter));
